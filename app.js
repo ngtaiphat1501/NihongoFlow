@@ -9,7 +9,7 @@ let nextBeatTime = 0;
 let beatCounter = 0;
 let bgAudio = null;
 let audioSource = null;
-const defaultMusicUrl = 'Michita - Cry for me (Lyrics + Eng + Vietsub) ft \u611B\u6D77 [LHNSGENYrWI].mp3';
+const defaultMusicUrl = 'bgmusic.mp3';
 
 const chords = [
   [174.61, 220.00, 261.63, 329.63],
