@@ -1950,15 +1950,9 @@ body {
   transform: scale(0.95);
 }
 
-#btn-toggle-music.playing {
+.music-volume-control.playing {
   border-color: var(--accent);
   box-shadow: 0 0 10px var(--accent-glow);
-  animation: musicPulse 1.5s infinite alternate ease-in-out;
-}
-
-@keyframes musicPulse {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.05); }
 }
 
 @media (max-width: 768px) {
@@ -1979,8 +1973,9 @@ body {
   gap: 10px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-color);
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 12px;
+  transition: var(--transition-smooth);
 }
 
 .music-volume-control input[type="range"] {
@@ -1994,5 +1989,10 @@ body {
   font-weight: 600;
   color: var(--accent);
   min-width: 32px;
+}
+
+.music-label-icon {
+  font-size: 16px;
+  user-select: none;
 }
 

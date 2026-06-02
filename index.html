@@ -100,14 +100,12 @@
             <span id="speech-speed-val">0.9x</span>
           </div>
 
-          <button class="btn-icon-control" id="btn-toggle-sound" title="Bật/Tắt âm thanh thông báo">
-            <span class="icon" id="sound-icon">🔊</span>
+          <button class="btn-icon-control" id="btn-toggle-music" title="Bật/Tắt nhạc nền chill">
+            <span class="icon" id="music-icon">🔇</span>
           </button>
 
           <div class="music-volume-control">
-            <button class="btn-icon-control" id="btn-toggle-music" title="Bật/Tắt nhạc nền chill">
-              <span class="icon" id="music-icon">🔇</span>
-            </button>
+            <span class="music-label-icon">🎵</span>
             <input type="range" id="music-volume" min="0" max="100" value="40" class="slider-speed" title="Âm lượng nhạc nền">
             <span id="music-volume-val">40%</span>
           </div>
@@ -451,31 +449,47 @@
 
         <section class="tab-pane" id="tab-contact">
           <div class="contact-container">
-            <div class="contact-left-col glass-card">
-              <h3>Chúng tôi luôn lắng nghe bạn!</h3>
-              <p>Mọi thắc mắc, phản hồi hoặc yêu cầu hỗ trợ xin vui lòng liên hệ với đội ngũ phát triển qua các kênh dưới đây hoặc gửi tin nhắn trực tiếp.</p>
-              <div class="contact-methods">
-                <a href="#" class="contact-method-card" target="_blank" rel="noopener noreferrer">
-                  <div class="contact-method-icon">💬</div>
-                  <div class="contact-method-info">
-                    <h4>Zalo Support</h4>
-                    <p>Hỗ trợ trực tuyến 24/7</p>
+            <div class="contact-left-col">
+              <div class="glass-card" style="margin-bottom: 24px;">
+                <h3>Chúng tôi luôn lắng nghe bạn!</h3>
+                <p>Mọi thắc mắc, phản hồi hoặc yêu cầu hỗ trợ xin vui lòng liên hệ với đội ngũ phát triển qua các kênh dưới đây hoặc gửi tin nhắn trực tiếp.</p>
+                <div class="contact-methods">
+                  <a href="#" class="contact-method-card" target="_blank" rel="noopener noreferrer">
+                    <div class="contact-method-icon">💬</div>
+                    <div class="contact-method-info">
+                      <h4>Zalo Support</h4>
+                      <p>Hỗ trợ trực tuyến 24/7</p>
+                    </div>
+                  </a>
+                  <a href="#" class="contact-method-card" target="_blank" rel="noopener noreferrer">
+                    <div class="contact-method-icon">👥</div>
+                    <div class="contact-method-info">
+                      <h4>Messenger</h4>
+                      <p>Nhắn tin qua Fanpage</p>
+                    </div>
+                  </a>
+                  <a href="mailto:support@nihongoflow.com" class="contact-method-card">
+                    <div class="contact-method-icon">✉️</div>
+                    <div class="contact-method-info">
+                      <h4>Email Hỗ Trợ</h4>
+                      <p>support@nihongoflow.com</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <div class="glass-card">
+                <h3>🎵 Cấu hình Nhạc Nền</h3>
+                <p>Dán liên kết trực tiếp tới tệp âm thanh (.mp3) để thay đổi nhạc nền chill của bạn.</p>
+                <div class="music-config-form">
+                  <div class="form-group-contact" style="margin-bottom: 12px;">
+                    <input type="url" id="music-url-input" placeholder="Dán link nhạc MP3 trực tiếp tại đây..." style="width: 100%;">
                   </div>
-                </a>
-                <a href="#" class="contact-method-card" target="_blank" rel="noopener noreferrer">
-                  <div class="contact-method-icon">👥</div>
-                  <div class="contact-method-info">
-                    <h4>Messenger</h4>
-                    <p>Nhắn tin qua Fanpage</p>
+                  <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary btn-sm" id="btn-save-music-url">Lưu & Phát Thử 💾</button>
+                    <button class="btn btn-secondary btn-sm" id="btn-reset-music-url">Khôi phục mặc định ↩️</button>
                   </div>
-                </a>
-                <a href="mailto:support@nihongoflow.com" class="contact-method-card">
-                  <div class="contact-method-icon">✉️</div>
-                  <div class="contact-method-info">
-                    <h4>Email Hỗ Trợ</h4>
-                    <p>support@nihongoflow.com</p>
-                  </div>
-                </a>
+                </div>
               </div>
             </div>
 

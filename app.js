@@ -1,12 +1,15 @@
 
 let musicCtx = null;
 let musicPlaying = false;
-let padOscs = [];
-let musicInterval = null;
-let bellInterval = null;
+let schedulerTimer = null;
 let petalInterval = null;
 let windNode = null;
 let musicVolumeNode = null;
+let nextBeatTime = 0;
+let beatCounter = 0;
+let bgAudio = null;
+let audioSource = null;
+const defaultMusicUrl = 'Michita - Cry for me (Lyrics + Eng + Vietsub) ft \u611B\u6D77 [LHNSGENYrWI].mp3';
 
 const chords = [
   [174.61, 220.00, 261.63, 329.63],
@@ -75,8 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
   toggleKatakana.addEventListener('change', () => renderAlphabetGrid('katakana'));
 
   const toggleSoundBtn = document.getElementById('btn-toggle-sound');
-  toggleSoundBtn.addEventListener('click', toggleSoundEffects);
-  updateSoundIcon();
+  if (toggleSoundBtn) {
+    toggleSoundBtn.addEventListener('click', toggleSoundEffects);
+    updateSoundIcon();
+  }
 
   const speedSlider = document.getElementById('speech-speed');
   const speedVal = document.getElementById('speech-speed-val');
@@ -158,12 +163,22 @@ document.addEventListener('DOMContentLoaded', () => {
       if (musicVolumeNode && musicCtx) {
         musicVolumeNode.gain.setValueAtTime(vol, musicCtx.currentTime);
       }
+      if (bgAudio) {
+        bgAudio.volume = pct / 100;
+      }
       localStorage.setItem('music_volume_pct', pct);
+    });
+
+    volumeSlider.addEventListener('click', (e) => {
+      e.stopPropagation();
     });
   }
 
   if (toggleMusicBtn) {
-    toggleMusicBtn.addEventListener('click', toggleBackgroundMusic);
+    toggleMusicBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleBackgroundMusic();
+    });
     updateMusicButtonUI();
 
     if (localStorage.getItem('bg_music_enabled') === null) {
@@ -185,6 +200,58 @@ document.addEventListener('DOMContentLoaded', () => {
       document.addEventListener('keydown', startMusicOnInteraction);
       document.addEventListener('touchstart', startMusicOnInteraction);
     }
+  }
+
+  const btnSaveMusic = document.getElementById('btn-save-music-url');
+  const btnResetMusic = document.getElementById('btn-reset-music-url');
+  const musicUrlInput = document.getElementById('music-url-input');
+
+  if (musicUrlInput) {
+    musicUrlInput.value = localStorage.getItem('custom_music_url') || '';
+  }
+
+  if (btnSaveMusic) {
+    btnSaveMusic.addEventListener('click', () => {
+      const url = musicUrlInput.value.trim();
+      if (url === '') {
+        localStorage.removeItem('custom_music_url');
+        playAudioTone('correct');
+        alert('Đã xóa nhạc nền tùy chỉnh. Hệ thống sẽ phát nhạc mặc định.');
+        if (musicPlaying) {
+          resetAudioSystem();
+          startBackgroundMusic();
+        }
+        return;
+      }
+
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        alert('Vui lòng nhập một liên kết URL hợp lệ bắt đầu bằng http:// hoặc https://');
+        return;
+      }
+
+      localStorage.setItem('custom_music_url', url);
+      playAudioTone('correct');
+      alert('Đã lưu cấu hình nhạc nền mới! Hệ thống đang tải và phát nhạc.');
+      if (musicPlaying) {
+        resetAudioSystem();
+      }
+      startBackgroundMusic();
+    });
+  }
+
+  if (btnResetMusic) {
+    btnResetMusic.addEventListener('click', () => {
+      localStorage.removeItem('custom_music_url');
+      if (musicUrlInput) {
+        musicUrlInput.value = '';
+      }
+      playAudioTone('correct');
+      alert('Đã khôi phục nhạc mặc định.');
+      if (musicPlaying) {
+        resetAudioSystem();
+        startBackgroundMusic();
+      }
+    });
   }
 
   const contactForm = document.getElementById('contact-form');
@@ -1237,47 +1304,110 @@ function startBackgroundMusic() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   if (!AudioContext) return;
 
-  musicCtx = new AudioContext();
-  musicVolumeNode = musicCtx.createGain();
+  if (!musicCtx) {
+    musicCtx = new AudioContext();
+    musicVolumeNode = musicCtx.createGain();
 
-  const volumeSlider = document.getElementById('music-volume');
-  const pct = volumeSlider ? parseInt(volumeSlider.value) : 40;
-  const vol = (pct / 100) * 0.3;
-  musicVolumeNode.gain.setValueAtTime(vol, musicCtx.currentTime);
-  musicVolumeNode.connect(musicCtx.destination);
+    const volumeSlider = document.getElementById('music-volume');
+    const pct = volumeSlider ? parseInt(volumeSlider.value) : 40;
+    const vol = (pct / 100) * 0.3;
+    musicVolumeNode.gain.setValueAtTime(vol, musicCtx.currentTime);
+    musicVolumeNode.connect(musicCtx.destination);
 
-  createWindGen();
+    createWindGen();
 
-  playNextChordLoop();
-  musicInterval = setInterval(playNextChordLoop, 5000);
-  bellInterval = setInterval(playRandomBell, 2500);
-  petalInterval = setInterval(playPetalSparkle, 3000);
+    const customUrl = localStorage.getItem('custom_music_url');
+    const url = customUrl || defaultMusicUrl;
+
+    playCustomMp3(url);
+    petalInterval = setInterval(playPetalSparkle, 3200);
+  }
+
+  musicCtx.resume().then(() => {
+    if (bgAudio) {
+      const volumeSlider = document.getElementById('music-volume');
+      const pct = volumeSlider ? parseInt(volumeSlider.value) : 40;
+      bgAudio.volume = pct / 100;
+      bgAudio.play().catch(err => {
+        playLofiSynth();
+      });
+    } else {
+      playLofiSynth();
+    }
+  });
 
   musicPlaying = true;
   updateMusicButtonUI();
 }
 
 function stopBackgroundMusic() {
-  if (musicInterval) clearInterval(musicInterval);
-  if (bellInterval) clearInterval(bellInterval);
+  if (musicCtx) {
+    musicCtx.suspend();
+  }
+  if (bgAudio) {
+    bgAudio.pause();
+  }
+  if (schedulerTimer) {
+    clearInterval(schedulerTimer);
+    schedulerTimer = null;
+  }
+  musicPlaying = false;
+  updateMusicButtonUI();
+}
 
-  padOscs.forEach(o => {
-    try { o.stop(); } catch(e) {}
-  });
-  padOscs = [];
-
+function resetAudioSystem() {
+  if (schedulerTimer) {
+    clearInterval(schedulerTimer);
+    schedulerTimer = null;
+  }
+  if (petalInterval) {
+    clearInterval(petalInterval);
+    petalInterval = null;
+  }
+  if (bgAudio) {
+    try {
+      bgAudio.pause();
+      bgAudio.src = '';
+      bgAudio.load();
+    } catch (e) {}
+    bgAudio = null;
+  }
+  audioSource = null;
   if (windNode) {
     try { windNode.stop(); } catch(e) {}
     windNode = null;
   }
-
   if (musicCtx) {
-    musicCtx.close();
+    try { musicCtx.close(); } catch(e) {}
     musicCtx = null;
   }
-
   musicPlaying = false;
-  updateMusicButtonUI();
+}
+
+function playCustomMp3(url) {
+  bgAudio = new Audio();
+  bgAudio.src = url;
+  bgAudio.loop = true;
+
+  const volumeSlider = document.getElementById('music-volume');
+  const pct = volumeSlider ? parseInt(volumeSlider.value) : 40;
+  bgAudio.volume = pct / 100;
+
+  bgAudio.addEventListener('error', (e) => {
+    playLofiSynth();
+  });
+
+  bgAudio.play().catch(err => {
+    playLofiSynth();
+  });
+}
+
+function playLofiSynth() {
+  if (schedulerTimer) return;
+  nextBeatTime = musicCtx.currentTime + 0.1;
+  beatCounter = 0;
+  musicScheduler();
+  schedulerTimer = setInterval(musicScheduler, 100);
 }
 
 function createWindGen() {
@@ -1319,78 +1449,149 @@ function modulateWindFilter(filter) {
   setTimeout(() => modulateWindFilter(filter), time * 1000);
 }
 
-function playNextChordLoop() {
-  if (!musicCtx) return;
-
-  const now = musicCtx.currentTime;
-  const chord = chords[currentChordIdx];
-
-  padOscs.forEach(o => {
-    try {
-      o.gainNode.gain.cancelScheduledValues(now);
-      o.gainNode.gain.setValueAtTime(o.gainNode.gain.value, now);
-      o.gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
-      setTimeout(() => {
-        try { o.stop(); } catch(e) {}
-      }, 1600);
-    } catch(e) {}
-  });
-  padOscs = [];
-
-  chord.forEach(freq => {
-    const osc = musicCtx.createOscillator();
-    const gain = musicCtx.createGain();
-    const filter = musicCtx.createBiquadFilter();
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, now);
-
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(350, now);
-
-    gain.gain.setValueAtTime(0.001, now);
-    gain.gain.exponentialRampToValueAtTime(0.08, now + 2.0);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(musicVolumeNode);
-
-    osc.start(now);
-
-    osc.gainNode = gain;
-    padOscs.push(osc);
-  });
-
-  currentChordIdx = (currentChordIdx + 1) % chords.length;
-}
-
-function playRandomBell() {
-  if (!musicCtx || Math.random() > 0.6) return;
-
-  const now = musicCtx.currentTime;
-  const chordBells = bellNotes[(currentChordIdx === 0 ? chords.length : currentChordIdx) - 1];
-  const freq = chordBells[Math.floor(Math.random() * chordBells.length)] * 2; 
-
+function playKick(time) {
   const osc = musicCtx.createOscillator();
   const gain = musicCtx.createGain();
+  osc.connect(gain);
+  gain.connect(musicVolumeNode);
+
+  osc.frequency.setValueAtTime(100, time);
+  osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.15);
+
+  gain.gain.setValueAtTime(0.2, time);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+
+  osc.start(time);
+  osc.stop(time + 0.16);
+}
+
+function playSnare(time) {
+  const bufferSize = musicCtx.sampleRate * 0.15;
+  const buffer = musicCtx.createBuffer(1, bufferSize, musicCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+
+  const noise = musicCtx.createBufferSource();
+  noise.buffer = buffer;
+
   const filter = musicCtx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 1000;
 
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(freq, now);
+  const gain = musicCtx.createGain();
+  gain.gain.setValueAtTime(0.12, time);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
 
-  filter.type = 'highpass';
-  filter.frequency.setValueAtTime(500, now);
-
-  gain.gain.setValueAtTime(0.001, now);
-  gain.gain.exponentialRampToValueAtTime(0.06, now + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
-
-  osc.connect(filter);
+  noise.connect(filter);
   filter.connect(gain);
   gain.connect(musicVolumeNode);
 
-  osc.start(now);
-  osc.stop(now + 2.6);
+  noise.start(time);
+  noise.stop(time + 0.15);
+}
+
+function playHihat(time) {
+  const bufferSize = musicCtx.sampleRate * 0.04;
+  const buffer = musicCtx.createBuffer(1, bufferSize, musicCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+
+  const noise = musicCtx.createBufferSource();
+  noise.buffer = buffer;
+
+  const filter = musicCtx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.value = 7000;
+
+  const gain = musicCtx.createGain();
+  gain.gain.setValueAtTime(0.04, time);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + 0.04);
+
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(musicVolumeNode);
+
+  noise.start(time);
+  noise.stop(time + 0.05);
+}
+
+function playPianoNote(freq, time) {
+  const osc1 = musicCtx.createOscillator();
+  const osc2 = musicCtx.createOscillator();
+  const gainNode = musicCtx.createGain();
+  const filterNode = musicCtx.createBiquadFilter();
+
+  osc1.type = 'triangle';
+  osc1.frequency.setValueAtTime(freq, time);
+
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(freq * 2, time);
+
+  filterNode.type = 'lowpass';
+  filterNode.frequency.setValueAtTime(600, time);
+  filterNode.frequency.exponentialRampToValueAtTime(150, time + 0.8);
+
+  gainNode.gain.setValueAtTime(0.001, time);
+  gainNode.gain.linearRampToValueAtTime(0.12, time + 0.02);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, time + 1.2);
+
+  osc1.connect(filterNode);
+  osc2.connect(filterNode);
+  filterNode.connect(gainNode);
+  gainNode.connect(musicVolumeNode);
+
+  osc1.start(time);
+  osc2.start(time);
+
+  osc1.stop(time + 1.3);
+  osc2.stop(time + 1.3);
+}
+
+function musicScheduler() {
+  if (!musicCtx) return;
+  while (nextBeatTime < musicCtx.currentTime + 0.2) {
+    scheduleBeat(beatCounter, nextBeatTime);
+    nextBeatTime += 0.395;
+    beatCounter = (beatCounter + 1) % 32;
+  }
+}
+
+function scheduleBeat(step, time) {
+  const barIdx = Math.floor(step / 8);
+  const noteIdx = step % 8;
+
+  let chord;
+  if (barIdx === 0) {
+    chord = [155.56, 185.00, 233.08, 277.18, 349.23];
+  } else if (barIdx === 1) {
+    chord = [138.59, 174.61, 207.65, 233.08, 349.23];
+  } else if (barIdx === 2) {
+    chord = [123.47, 146.83, 185.00, 233.08, 293.66];
+  } else {
+    chord = [116.54, 138.59, 174.61, 207.65, 277.18];
+  }
+
+  const pianoMapping = [0, 1, 2, 3, 4, 2, 1, 2];
+  const freq = chord[pianoMapping[noteIdx]];
+  playPianoNote(freq, time);
+
+  const kicks = [0, 7, 8, 15, 16, 23, 24, 31];
+  const snares = [4, 12, 20, 28];
+  const hats = [2, 6, 10, 14, 18, 22, 26, 30];
+
+  if (kicks.includes(step)) {
+    playKick(time);
+  }
+  if (snares.includes(step)) {
+    playSnare(time);
+  }
+  if (hats.includes(step)) {
+    playHihat(time);
+  }
 }
 
 function playPetalSparkle() {
@@ -1427,7 +1628,8 @@ function playPetalSparkle() {
   }
 }
 
-function toggleBackgroundMusic() {
+function toggleBackgroundMusic(e) {
+  if (e) e.stopPropagation();
   if (musicPlaying) {
     stopBackgroundMusic();
     localStorage.setItem('bg_music_enabled', 'false');
@@ -1438,16 +1640,17 @@ function toggleBackgroundMusic() {
 }
 
 function updateMusicButtonUI() {
+  const container = document.querySelector('.music-volume-control');
   const btn = document.getElementById('btn-toggle-music');
   const icon = document.getElementById('music-icon');
   if (!btn || !icon) return;
 
   if (musicPlaying) {
-    btn.classList.add('playing');
-    icon.textContent = '🎵';
+    if (container) container.classList.add('playing');
+    icon.textContent = '🔊';
     btn.title = 'Tắt nhạc nền chill';
   } else {
-    btn.classList.remove('playing');
+    if (container) container.classList.remove('playing');
     icon.textContent = '🔇';
     btn.title = 'Bật nhạc nền chill';
   }
