@@ -59,6 +59,10 @@ let quizState = {
 let japaneseVoice = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  const customUrl = localStorage.getItem('custom_music_url');
+  if (customUrl && (customUrl.includes('Michita') || customUrl.includes('愛海') || customUrl.includes('\u611B\u6D77'))) {
+    localStorage.removeItem('custom_music_url');
+  }
   initSakuraPetals();
   initVoices();
   initStreak();
