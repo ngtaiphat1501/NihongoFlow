@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nihongo Flow - Tự Học Tiếng Nhật Cực Dễ</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="glow-bg">
+    <div class="blob blob-pink"></div>
+    <div class="blob blob-purple"></div>
+    <div class="blob blob-cyan"></div>
+  </div>
+
+  <div id="sakura-container"></div>
+
+  <div class="app-container">
+
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🌸</div>
+        <div class="logo-text">
+          <h1>Nihongo<span>Flow</span></h1>
+          <p>日本語フロー</p>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="dashboard" id="btn-tab-dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Trang Chủ</span>
+        </button>
+        <button class="nav-item" data-tab="alphabet" id="btn-tab-alphabet">
+          <span class="nav-icon">🔤</span>
+          <span class="nav-label">Bảng Chữ Cái</span>
+        </button>
+        <button class="nav-item" data-tab="vocabulary" id="btn-tab-vocabulary">
+          <span class="nav-icon">📚</span>
+          <span class="nav-label">Thẻ Từ Vựng</span>
+        </button>
+        <button class="nav-item" data-tab="quiz" id="btn-tab-quiz">
+          <span class="nav-icon">🎮</span>
+          <span class="nav-label">Phòng Quiz</span>
+        </button>
+        <button class="nav-item" data-tab="reference" id="btn-tab-reference">
+          <span class="nav-icon">📋</span>
+          <span class="nav-label">Bảng Tra Cứu</span>
+        </button>
+        <button class="nav-item" data-tab="contact" id="btn-tab-contact">
+          <span class="nav-icon">📬</span>
+          <span class="nav-label">Liên Hệ & Góp Ý</span>
+        </button>
+      </nav>
+
+      <div class="user-quick-stats">
+        <div class="stat-badge streak" title="Số ngày học liên tục">
+          <span class="badge-icon">🔥</span>
+          <div>
+            <span class="stat-num" id="user-streak">0</span>
+            <span class="stat-lbl">Ngày học</span>
+          </div>
+        </div>
+        <div class="stat-badge score" title="Tổng số câu đúng">
+          <span class="badge-icon">🏆</span>
+          <div>
+            <span class="stat-num" id="user-score">0</span>
+            <span class="stat-lbl">XP Tích Lũy</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+
+      <header class="top-bar">
+        <div class="welcome-message">
+          <h2>NihongoFlow Xin Chào <span class="wave-hand">👋</span></h2>
+          <p class="slogan-animated" id="slogan-display">Hôm nay bạn muốn học gì thế? Hãy cùng luyện tập nào!</p>
+        </div>
+
+        <div class="controls-bar">
+
+          <div class="voice-select-wrapper">
+            <span class="control-label">🗣️ Giọng đọc:</span>
+            <select id="voice-select" class="dropdown-voice">
+              <option value="default">Đang quét giọng...</option>
+            </select>
+          </div>
+
+          <div class="voice-speed-control">
+            <span class="control-label" title="Tốc độ phát âm">🔊 Tốc độ:</span>
+            <input type="range" id="speech-speed" min="0.5" max="1.2" step="0.1" value="0.9" class="slider-speed">
+            <span id="speech-speed-val">0.9x</span>
+          </div>
+
+          <button class="btn-icon-control" id="btn-toggle-sound" title="Bật/Tắt âm thanh thông báo">
+            <span class="icon" id="sound-icon">🔊</span>
+          </button>
+
+          <div class="music-volume-control">
+            <button class="btn-icon-control" id="btn-toggle-music" title="Bật/Tắt nhạc nền chill">
+              <span class="icon" id="music-icon">🔇</span>
+            </button>
+            <input type="range" id="music-volume" min="0" max="100" value="40" class="slider-speed" title="Âm lượng nhạc nền">
+            <span id="music-volume-val">40%</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="tab-content-wrapper">
+
+        <section class="tab-pane active" id="tab-dashboard">
+          <div class="dashboard-hero">
+            <div class="hero-info">
+              <span class="hero-tag">Cơ hội mới mỗi ngày</span>
+              <h3>Bắt đầu hành trình chinh phục tiếng Nhật!</h3>
+              <p>Học bảng chữ cái Hiragana, Katakana và ghi nhớ từ vựng qua các bộ thẻ flashcard lật 3D vô cùng sinh động.</p>
+              <div class="hero-actions">
+                <button class="btn btn-primary" onclick="switchTab('alphabet')">Bắt Đầu Học Chữ Cái</button>
+                <button class="btn btn-secondary" onclick="switchTab('quiz')">Luyện Tập Trắc Nghiệm</button>
+              </div>
+            </div>
+            <div class="hero-illustration">🌸</div>
+          </div>
+
+          <div class="dashboard-grid">
+
+            <div class="glass-card quote-card">
+              <div class="card-header">
+                <h4>💡 Lời khuyên học tập</h4>
+              </div>
+              <div class="card-body">
+                <blockquote class="nihon-quote">
+                  "継続は力なり"
+                  <cite>(Keizoku wa chikara nari) - Kiên trì tạo nên sức mạnh.</cite>
+                </blockquote>
+                <p class="quote-explanation">Học tiếng Nhật không khó, chỉ cần bạn dành ra 10-15 phút mỗi ngày cùng Nihongo Flow để tích lũy kiến thức nhé!</p>
+              </div>
+            </div>
+
+            <div class="glass-card progress-card">
+              <div class="card-header">
+                <h4>📈 Thành tựu cá nhân</h4>
+              </div>
+              <div class="card-body">
+                <div class="stat-progress-item">
+                  <div class="progress-info">
+                    <span>Bảng Hiragana đã thuộc</span>
+                    <span id="hiragana-progress-text">0/46</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="hiragana-progress-bar" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="stat-progress-item">
+                  <div class="progress-info">
+                    <span>Bảng Katakana đã thuộc</span>
+                    <span id="katakana-progress-text">0/46</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="katakana-progress-bar" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="stat-progress-item">
+                  <div class="progress-info">
+                    <span>Tỷ lệ làm Quiz chính xác</span>
+                    <span id="accuracy-progress-text">0%</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="accuracy-progress-bar" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-shortcuts">
+            <h4 class="section-title">Khám phá nhanh các chế độ</h4>
+            <div class="shortcut-grid">
+              <div class="shortcut-item" onclick="switchTab('alphabet')">
+                <div class="shortcut-icon">🔤</div>
+                <div class="shortcut-text">
+                  <h5>Bảng chữ cái tương tác</h5>
+                  <p>Học Hiragana & Katakana, click nghe phát âm giọng bản xứ.</p>
+                </div>
+              </div>
+              <div class="shortcut-item" onclick="switchTab('vocabulary')">
+                <div class="shortcut-icon">📚</div>
+                <div class="shortcut-text">
+                  <h5>Thẻ từ vựng 3D</h5>
+                  <p>Ghi nhớ từ vựng qua thẻ lật thông minh chia theo chủ đề.</p>
+                </div>
+              </div>
+              <div class="shortcut-item" onclick="switchTab('quiz')">
+                <div class="shortcut-icon">🎮</div>
+                <div class="shortcut-text">
+                  <h5>Kiểm tra phản xạ (Quiz)</h5>
+                  <p>Thử tài nghe âm thanh đoán chữ, ghép từ vựng tính điểm.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="tab-alphabet">
+          <div class="section-header">
+            <div>
+              <h3>Bảng Chữ Cái Nhật Ngữ</h3>
+              <p>Bấm chọn từng ký tự để nghe âm thanh phát âm tương ứng.</p>
+            </div>
+
+            <div class="toggle-switch">
+              <input type="radio" id="toggle-hiragana" name="kana-toggle" value="hiragana" checked>
+              <label for="toggle-hiragana">平仮名 Hiragana</label>
+
+              <input type="radio" id="toggle-katakana" name="kana-toggle" value="katakana">
+              <label for="toggle-katakana">片仮名 Katakana</label>
+
+              <span class="toggle-slider"></span>
+            </div>
+          </div>
+
+          <div class="kana-grid-container">
+
+            <div class="kana-header-row">
+              <div>A (あ)</div>
+              <div>I (い)</div>
+              <div>U (う)</div>
+              <div>E (え)</div>
+              <div>O (お)</div>
+            </div>
+
+            <div class="kana-grid" id="kana-cells-grid"></div>
+          </div>
+
+          <div class="kana-detail-box glass-card" id="kana-detail-box">
+            <span class="close-detail" id="close-detail-btn">×</span>
+            <div class="detail-content">
+              <div class="detail-big-kana" id="detail-kana">あ</div>
+              <div class="detail-info">
+                <h4 id="detail-romaji">Romaji: A</h4>
+                <p>Ký tự phát âm chuẩn giọng Nhật Bản. Click nút âm thanh để nghe lại.</p>
+                <div class="detail-buttons">
+                  <button class="btn btn-primary btn-speak" id="detail-speak-btn">🔊 Nghe Phát Âm</button>
+                  <button class="btn btn-secondary" id="detail-mark-learned-btn">✅ Đánh dấu đã thuộc</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="tab-vocabulary">
+          <div class="section-header">
+            <div>
+              <h3>Thẻ Từ Vựng Thông Minh</h3>
+              <p>Chọn một chủ đề bên dưới và nhấp vào thẻ để lật xem nghĩa tiếng Việt.</p>
+            </div>
+          </div>
+
+          <div class="course-selector-container">
+            <span class="selector-label">🎓 Khóa học:</span>
+            <div class="course-chips" id="vocab-course-chips"></div>
+          </div>
+
+          <div class="category-chips-container" id="vocab-category-chips"></div>
+
+          <div class="flashcards-wrapper">
+            <div class="flashcards-controls">
+              <span class="vocab-count" id="vocab-display-count">Đang hiển thị: 0 từ</span>
+              <button class="btn btn-secondary btn-sm" id="btn-shuffle-cards">🔀 Trộn ngẫu nhiên</button>
+            </div>
+
+            <div class="flashcards-grid" id="flashcards-grid"></div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="tab-quiz">
+
+          <div class="quiz-setup-panel glass-card" id="quiz-setup-panel">
+            <div class="quiz-setup-header">
+              <span class="setup-icon">🎯</span>
+              <h3>Luyện Tập Phản Xạ Tiếng Nhật</h3>
+              <p>Chọn nội dung và số lượng câu hỏi để bắt đầu bài trắc nghiệm tính điểm.</p>
+            </div>
+
+            <div class="quiz-setup-form">
+
+              <div class="form-group">
+                <label class="form-label">📖 Nội dung bài thi:</label>
+                <div class="radio-group-cards">
+                  <div class="radio-card active" data-quiz-type="hiragana">
+                    <span class="radio-card-icon">あ</span>
+                    <div class="radio-card-text">
+                      <h5>Bảng Hiragana</h5>
+                      <p>Nhìn chữ đoán âm đọc Romaji</p>
+                    </div>
+                  </div>
+                  <div class="radio-card" data-quiz-type="katakana">
+                    <span class="radio-card-icon">ア</span>
+                    <div class="radio-card-text">
+                      <h5>Bảng Katakana</h5>
+                      <p>Nhìn chữ đoán âm đọc Romaji</p>
+                    </div>
+                  </div>
+                  <div class="radio-card" data-quiz-type="listening">
+                    <span class="radio-card-icon">🎧</span>
+                    <div class="radio-card-text">
+                      <h5>Luyện Nghe Ký Tự</h5>
+                      <p>Nghe âm thanh đoán chữ đúng</p>
+                    </div>
+                  </div>
+                  <div class="radio-card" data-quiz-type="vocabulary">
+                    <span class="radio-card-icon">📚</span>
+                    <div class="radio-card-text">
+                      <h5>Kho Từ Vựng</h5>
+                      <p>Đoán nghĩa Nhật-Việt hoặc ngược lại</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group hidden" id="quiz-vocab-filter-group">
+                <label class="form-label">📂 Bộ lọc bài ôn tập:</label>
+                <div class="quiz-filter-row">
+                  <select id="quiz-course-select" class="dropdown-voice select-block">
+
+                  </select>
+                  <select id="quiz-category-select" class="dropdown-voice select-block">
+
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">🔢 Số lượng câu hỏi:</label>
+                <div class="quiz-length-options">
+                  <button class="btn-length-opt active" data-length="10">10 Câu</button>
+                  <button class="btn-length-opt" data-length="20">20 Câu</button>
+                  <button class="btn-length-opt" data-length="30">30 Câu</button>
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-block" id="btn-start-quiz">Bắt Đầu Làm Quiz 🚀</button>
+            </div>
+          </div>
+
+          <div class="quiz-play-panel glass-card hidden" id="quiz-play-panel">
+            <div class="quiz-play-header">
+              <div class="quiz-meta-info">
+                <span class="quiz-progress-text" id="quiz-progress-indicator">Câu hỏi: 1/10</span>
+                <span class="quiz-timer" id="quiz-timer">Thời gian: 00:00</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="quiz-play-progress-bar" style="width: 10%"></div>
+              </div>
+            </div>
+
+            <div class="quiz-question-container">
+
+              <div class="quiz-listening-hint hidden" id="quiz-audio-trigger">
+                <button class="btn-speak-large" id="quiz-audio-btn">
+                  <span class="wave-icon">🔊</span>
+                  <span>Nhấn để nghe lại</span>
+                </button>
+              </div>
+
+              <div class="question-wrapper-layout">
+                <div class="quiz-question-text" id="quiz-question-display">あ</div>
+                <button class="btn-speak-question hidden" id="quiz-inline-speak-btn" title="Nghe phát âm">🔊</button>
+              </div>
+              <div class="quiz-question-sub" id="quiz-question-subtext">Âm đọc Romaji của chữ này là gì?</div>
+            </div>
+
+            <div class="quiz-options-grid" id="quiz-options-grid"></div>
+
+            <div class="quiz-actions-bar">
+              <button class="btn btn-danger" id="btn-quit-quiz">Hủy làm bài</button>
+              <button class="btn btn-primary hidden" id="btn-next-question">Tiếp tục ➔</button>
+            </div>
+          </div>
+
+          <div class="quiz-results-panel glass-card hidden" id="quiz-results-panel">
+            <div class="results-header">
+              <div class="badge-achievement" id="results-medal">🏆</div>
+              <h3 id="results-headline">Tuyệt Vời! Bạn đã hoàn thành!</h3>
+              <p id="results-summary">Bạn trả lời đúng 8 trên 10 câu.</p>
+            </div>
+
+            <div class="results-stats-row">
+              <div class="results-stat-box">
+                <span class="stat-num-large" id="results-score-xp">+80 XP</span>
+                <span class="stat-lbl-small">Điểm cộng tích lũy</span>
+              </div>
+              <div class="results-stat-box">
+                <span class="stat-num-large" id="results-accuracy-pct">80%</span>
+                <span class="stat-lbl-small">Tỷ lệ chính xác</span>
+              </div>
+              <div class="results-stat-box">
+                <span class="stat-num-large" id="results-time-taken">0:45</span>
+                <span class="stat-lbl-small">Thời gian hoàn thành</span>
+              </div>
+            </div>
+
+            <div class="results-actions">
+              <button class="btn btn-primary" id="btn-quiz-retry">Làm Đề Khác</button>
+              <button class="btn btn-secondary" onclick="switchTab('dashboard')">Quay Về Trang Chủ</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="tab-reference">
+          <div class="section-header">
+            <div>
+              <h3>Bảng Tra Cứu Sơ Cấp (Dekiru Nihongo)</h3>
+              <p>Tra cứu nhanh số đếm, thứ ngày tháng, lượng từ và danh xưng gia đình. Bấm vào mỗi dòng để nghe đọc.</p>
+            </div>
+          </div>
+
+          <div class="ref-sub-menu" id="ref-category-chips">
+            <button class="ref-btn active" data-ref="numbers">🔢 Số Đếm</button>
+            <button class="ref-btn" data-ref="calendar">📅 Thời Gian</button>
+            <button class="ref-btn" data-ref="counters">🧮 Lượng Từ Đếm Vật</button>
+            <button class="ref-btn" data-ref="family">👨‍👩‍👧‍👦 Gia Đình</button>
+          </div>
+
+          <div class="ref-content-container glass-card">
+            <div class="table-responsive">
+              <table class="ref-table">
+                <thead>
+                  <tr id="ref-table-headers">
+                    <th>Định nghĩa</th>
+                    <th>Tiếng Nhật (Kana)</th>
+                    <th>Romaji</th>
+                    <th>Nghĩa tiếng Việt</th>
+                  </tr>
+                </thead>
+                <tbody id="ref-table-body">
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="tab-contact">
+          <div class="contact-container">
+            <div class="contact-left-col glass-card">
+              <h3>Chúng tôi luôn lắng nghe bạn!</h3>
+              <p>Mọi thắc mắc, phản hồi hoặc yêu cầu hỗ trợ xin vui lòng liên hệ với đội ngũ phát triển qua các kênh dưới đây hoặc gửi tin nhắn trực tiếp.</p>
+              <div class="contact-methods">
+                <a href="#" class="contact-method-card" target="_blank" rel="noopener noreferrer">
+                  <div class="contact-method-icon">💬</div>
+                  <div class="contact-method-info">
+                    <h4>Zalo Support</h4>
+                    <p>Hỗ trợ trực tuyến 24/7</p>
+                  </div>
+                </a>
+                <a href="#" class="contact-method-card" target="_blank" rel="noopener noreferrer">
+                  <div class="contact-method-icon">👥</div>
+                  <div class="contact-method-info">
+                    <h4>Messenger</h4>
+                    <p>Nhắn tin qua Fanpage</p>
+                  </div>
+                </a>
+                <a href="mailto:support@nihongoflow.com" class="contact-method-card">
+                  <div class="contact-method-icon">✉️</div>
+                  <div class="contact-method-info">
+                    <h4>Email Hỗ Trợ</h4>
+                    <p>support@nihongoflow.com</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <div class="contact-right-col glass-card">
+              <h3>Gửi tin nhắn trực tiếp</h3>
+              <p>Ý kiến đóng góp của bạn sẽ giúp ứng dụng ngày càng hoàn thiện hơn.</p>
+
+              <form id="contact-form" class="contact-form">
+                <div class="form-row-contact">
+                  <div class="form-group-contact">
+                    <label for="contact-name">Họ và tên</label>
+                    <input type="text" id="contact-name" placeholder="Nhập tên của bạn" required>
+                  </div>
+                  <div class="form-group-contact">
+                    <label for="contact-email">Email</label>
+                    <input type="email" id="contact-email" placeholder="Nhập email" required>
+                  </div>
+                </div>
+
+                <div class="form-group-contact">
+                  <label for="contact-subject">Chủ đề</label>
+                  <select id="contact-subject">
+                    <option value="feedback">Góp ý ứng dụng</option>
+                    <option value="bug">Báo lỗi hệ thống</option>
+                    <option value="business">Hợp tác phát triển</option>
+                    <option value="other">Vấn đề khác</option>
+                  </select>
+                </div>
+
+                <div class="form-group-contact">
+                  <label for="contact-message">Nội dung tin nhắn</label>
+                  <textarea id="contact-message" rows="5" placeholder="Hãy viết ý kiến của bạn ở đây..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-bounce" id="btn-submit-contact">
+                  Gửi liên hệ 🚀
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="vocabulary.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
